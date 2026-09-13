@@ -1,0 +1,15 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/data
+      - ./models:/app/models:ro
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      - DATABASE_URL=sqlite:////data/flood_risk.db

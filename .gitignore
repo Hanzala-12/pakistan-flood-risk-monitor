@@ -1,0 +1,41 @@
+# --- Python / backend --------------------------------------------------
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+
+# --- Runtime data ---------------------------------------------------------
+data/
+*.db
+*.sqlite3
+backend/uvicorn.log
+*.log
+
+# --- Secrets ---------------------------------------------------------------
+.env
+.env.*
+!.env.example
+
+# --- Model artifacts (from Kaggle, see models/README.md) -------------------
+models/*.pt
+models/*.pth
+models/model_config.json
+models/metrics.json
+models/sample_predictions.png
+# Scratch landing spot for raw Kaggle downloads before copying the good bits into models/
+flood_segmentation_artifacts/
+
+# --- Node / frontend ---------------------------------------------------
+frontend/node_modules/
+frontend/.expo/
+frontend/dist/
+frontend/npm-debug.*
+frontend/.env
+
+# --- Editors / OS -----------------------------------------------------
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
