@@ -125,22 +125,42 @@ backend loads them at startup; `GET /health` confirms
 `segmentation_model_loaded: true`.
 
 **Metrics** (`models/metrics.json`, full run — 431 hand-labeled chips, the
-paper's own 252/89/90 train/val/test split, both models 25 epochs, ~11
-minutes total on a Kaggle T4, no errors):
+paper's own 252/89/90 train/val/test split; U-Net 25 epochs, Prithvi 50
+epochs with a cosine LR schedule; test metrics from tiled full-resolution
+inference, not a single downsampled crop — see the notebook's changelog):
 
 | Model | mean IoU | water IoU | F1 (water) | Precision | Recall |
 |---|---|---|---|---|---|
-| **U-Net (resnet34)** — selected | **0.874** | 0.782 | 0.878 | 0.892 | 0.864 |
-| Prithvi-EO-1.0 fine-tune | 0.822 | 0.695 | 0.820 | 0.803 | 0.838 |
+| **U-Net (resnet34)** — selected | **0.890** | 0.811 | 0.895 | 0.889 | 0.902 |
+| Prithvi-EO-1.0 fine-tune | 0.856 | 0.752 | 0.858 | 0.852 | 0.865 |
 
-The U-Net baseline won. That's a real, explainable result, not a bug: full
-end-to-end fine-tuning of an 86M-parameter transformer on only 252 training
-images is a well-known overfitting risk, while a ResNet34 U-Net is far more
-sample-efficient at this scale. `CONFIG["freeze_prithvi_backbone"]=True`
-(linear-probe instead of full fine-tune) is the documented next experiment
-if you want to see whether Prithvi catches up. `models/sample_predictions.png`
-shows both models tracking real water body shapes (rivers, scattered ponds,
-a large flood extent) — not degenerate all-one-class output.
+The U-Net baseline won, and this is the smaller of two real findings here.
+An independent, peer-reviewed reproduction of this exact benchmark
+([SIGSPATIAL 2023](https://arxiv.org/abs/2309.14500)) found the same thing —
+U-Net beating Prithvi in-distribution on Sen1Floods11 — so this is a
+documented pattern on this dataset, not a bug in this pipeline.
+
+The more interesting finding is what it took to get these numbers. The
+first working run (25 epochs, resizing each 512x512 chip down to 224x224)
+scored U-Net 0.874 / Prithvi 0.822 mIoU — Prithvi sitting ~11 points of
+water IoU behind IBM's own published benchmark for this exact model on this
+exact dataset (mIoU 0.887, water IoU 0.805). Three rounds of diagnosis
+before this one — correcting the learning rate/schedule/epochs/batch size
+against NASA-IMPACT's actual training config, then replacing the decoder
+with a real multi-scale FPN+PPM (UperNet-style) architecture — each came
+back statistically flat, which is itself useful evidence: it ruled out
+"undertrained" and "decoder too simple" as the cause. What actually moved
+both models' numbers was switching from resizing the whole chip to
+training on native-resolution random crops and evaluating with tiled
+(sliding-window) inference over the full test image — the independent
+reproduction's config specified exactly that, and this pipeline didn't
+until this pass. Full diagnostic trail, with what was tried and ruled out
+at each step, is in the notebook's section 0.
+
+`models/sample_predictions.png` shows both models tracking real water body
+shapes (rivers, scattered ponds, a large flood extent) — not degenerate
+all-one-class output; the river-tracing detail visibly sharpened once
+training moved to native-resolution crops.
 
 ## Risk fusion — rule-based by design, not a cut corner
 

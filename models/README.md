@@ -14,13 +14,17 @@ models/
 None of these are checked into git (see `.gitignore`) — they're produced by
 running the notebook on Kaggle and downloading its outputs.
 
-**Status: filled in.** These are real weights from an actual Kaggle run (see
-`files/flood_segmentation_training.ipynb`, which now has that run's outputs
-baked in as a record). Both models trained the full 25 epochs with no
-errors; the U-Net baseline won (mean IoU 0.874 vs. Prithvi's 0.822 — see
-`metrics.json` for the full breakdown of both, and `sample_predictions.png`
-for a visual check). `GET /health` reports `segmentation_model_loaded: true`
-against these files, verified.
+**Status: filled in**, after four diagnostic rounds (see
+`files/flood_segmentation_training.ipynb` section 0 for the full history —
+the notebook has this final run's outputs baked in as a record). U-Net
+won: mean IoU 0.890 vs. Prithvi's 0.856 (`metrics.json` has the full
+breakdown of both; `sample_predictions.png` for a visual check). Both
+numbers are within a few points of published benchmarks for this dataset
+(U-Net vs. an independent reproduction's 0.908; Prithvi vs. IBM's own
+0.887) after correcting a resize-vs-crop resolution issue that was capping
+both models well below what the architecture/training recipe alone
+explained. `GET /health` reports `segmentation_model_loaded: true` against
+these files, verified.
 
 If you retrain and drop in new files, the section below still describes
 what happens when this directory is empty:
