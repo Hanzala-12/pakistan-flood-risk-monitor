@@ -34,6 +34,7 @@ from dataclasses import dataclass
 import requests
 
 from app.config import get_settings
+from app.ingestion.baseline_store import get_cached_baseline, set_cached_baseline
 
 logger = logging.getLogger(__name__)
 
@@ -77,10 +78,10 @@ class OpenMeteoHydrologyProvider:
         self._baseline_cache: dict[_BaselineCacheKey, float] = {}
 
     # ---- Soil moisture ---------------------------------------------------
-    def get_soil_moisture_signal(self, district, as_of: datetime.date) -> SoilMoistureResult:
+    def get_soil_moisture_signal(self, district, as_of: datetime.date, db=None) -> SoilMoistureResult:
         try:
             current = self._fetch_soil_moisture(district.centroid_lat, district.centroid_lon, as_of - datetime.timedelta(days=2), as_of)
-            baseline = self._get_baseline(district, as_of, kind="soil",
+            baseline = self._get_baseline(district, as_of, kind="soil", db=db,
                                            fetch_fn=lambda lat, lon, start, end: self._fetch_soil_moisture_baseline(lat, lon, start, end))
             anomaly = self._anomaly_score(current, baseline, SOIL_MOISTURE_SATURATION_MULTIPLE)
             return SoilMoistureResult(anomaly, round(current, 3), round(baseline, 3), "open_meteo")
@@ -131,13 +132,13 @@ class OpenMeteoHydrologyProvider:
         return values[-1] if values else 0.0  # most recent hour in the window
 
     # ---- River discharge ---------------------------------------------------
-    def get_river_discharge_signal(self, district, as_of: datetime.date) -> RiverDischargeResult:
+    def get_river_discharge_signal(self, district, as_of: datetime.date, db=None) -> RiverDischargeResult:
         if district.discharge_query_point_lon is None or district.discharge_query_point_lat is None:
             return RiverDischargeResult(0.0, 0.0, 0.0, "unavailable_no_calibration")
         try:
             lat, lon = district.discharge_query_point_lat, district.discharge_query_point_lon
             current = self._fetch_discharge(lat, lon, as_of - datetime.timedelta(days=2), as_of)
-            baseline = self._get_baseline(district, as_of, kind="discharge",
+            baseline = self._get_baseline(district, as_of, kind="discharge", db=db,
                                            fetch_fn=lambda la, lo, start, end: self._fetch_discharge(la, lo, start, end),
                                            lat=lat, lon=lon)
             anomaly = self._anomaly_score(current, baseline, RIVER_DISCHARGE_SATURATION_MULTIPLE)
@@ -165,12 +166,16 @@ class OpenMeteoHydrologyProvider:
         score = (ratio - 1.0) / (saturation_multiple - 1.0)
         return round(max(0.0, min(1.0, score)), 3)
 
-    def _get_baseline(self, district, as_of: datetime.date, kind: str, fetch_fn, lat=None, lon=None) -> float:
+    def _get_baseline(self, district, as_of: datetime.date, kind: str, fetch_fn, lat=None, lon=None, db=None) -> float:
         settings = get_settings()
         week = as_of.isocalendar()[1]
         key = _BaselineCacheKey(district.id, week, kind)
         if key in self._baseline_cache:
             return self._baseline_cache[key]
+        cached = get_cached_baseline(db, district.id, week, kind)
+        if cached is not None:
+            self._baseline_cache[key] = cached
+            return cached
 
         query_lat = lat if lat is not None else district.centroid_lat
         query_lon = lon if lon is not None else district.centroid_lon
@@ -190,4 +195,6 @@ class OpenMeteoHydrologyProvider:
 
         baseline = round(sum(samples) / len(samples), 3) if samples else 0.0
         self._baseline_cache[key] = baseline
+        if samples:  # only persist a baseline backed by at least one real year
+            set_cached_baseline(db, district.id, week, kind, baseline)
         return baseline

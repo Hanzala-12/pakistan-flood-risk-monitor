@@ -6,9 +6,12 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack screenOptions={{ headerShadowVisible: false }}>
-        <Stack.Screen name="index" options={{ title: 'Flood Risk Monitor' }} />
-        <Stack.Screen name="district/[id]" options={{ title: 'District detail' }} />
+      {/* headerShown: false — every screen renders its own <AppHeader />
+          (components/app-header.tsx) instead of the native Stack header, so
+          the mark/back-button/title styling is fully custom. */}
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="index" />
+        <Stack.Screen name="district/[id]" />
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>

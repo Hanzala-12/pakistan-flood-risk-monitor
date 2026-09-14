@@ -42,3 +42,6 @@ frontend/.env
 .idea/
 .DS_Store
 Thumbs.db
+
+# --- Personal / local-only notes, not project deliverables -------------
+linkedin_post_draft.md

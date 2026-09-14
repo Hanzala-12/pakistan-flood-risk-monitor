@@ -32,6 +32,7 @@ import requests
 
 from app.config import get_settings
 from app.ingestion.base import RainfallProvider, RainfallResult
+from app.ingestion.baseline_store import get_cached_baseline, set_cached_baseline
 
 logger = logging.getLogger(__name__)
 
@@ -59,7 +60,7 @@ class OpenMeteoRainfallProvider(RainfallProvider):
     def __init__(self):
         self._baseline_cache: dict[_BaselineCacheKey, float] = {}
 
-    def get_rainfall_signal(self, district, as_of: datetime.date) -> RainfallResult:
+    def get_rainfall_signal(self, district, as_of: datetime.date, db=None) -> RainfallResult:
         try:
             recent_daily = self._fetch_daily_precip(
                 district.centroid_lat, district.centroid_lon,
@@ -67,7 +68,7 @@ class OpenMeteoRainfallProvider(RainfallProvider):
             )
             rainfall_3d = round(sum(recent_daily[-3:]), 1)
             rainfall_7d = round(sum(recent_daily), 1)
-            baseline_7d = self._get_seasonal_baseline(district, as_of)
+            baseline_7d = self._get_seasonal_baseline(district, as_of, db)
             anomaly = self._anomaly_score(rainfall_7d, baseline_7d)
 
             return RainfallResult(
@@ -109,12 +110,16 @@ class OpenMeteoRainfallProvider(RainfallProvider):
         values = resp.json()["daily"]["precipitation_sum"]
         return [v or 0.0 for v in values]
 
-    def _get_seasonal_baseline(self, district, as_of: datetime.date) -> float:
+    def _get_seasonal_baseline(self, district, as_of: datetime.date, db=None) -> float:
         settings = get_settings()
         week = as_of.isocalendar()[1]
         key = _BaselineCacheKey(district.id, week)
         if key in self._baseline_cache:
             return self._baseline_cache[key]
+        cached = get_cached_baseline(db, district.id, week, "rainfall")
+        if cached is not None:
+            self._baseline_cache[key] = cached
+            return cached
 
         weekly_totals = []
         for years_back in range(1, settings.rainfall_baseline_years + 1):
@@ -133,4 +138,6 @@ class OpenMeteoRainfallProvider(RainfallProvider):
 
         baseline = round(sum(weekly_totals) / len(weekly_totals), 1) if weekly_totals else 0.0
         self._baseline_cache[key] = baseline
+        if weekly_totals:  # only persist a baseline backed by at least one real year
+            set_cached_baseline(db, district.id, week, "rainfall", baseline)
         return baseline

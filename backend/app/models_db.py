@@ -2,7 +2,7 @@
 extended with two real signals found by researching comparable open-source
 flood-risk projects (soil moisture, river discharge — see README "Data
 sourcing decisions")."""
-from sqlalchemy import Column, String, Float, DateTime, ForeignKey, Integer, JSON
+from sqlalchemy import Column, String, Float, DateTime, ForeignKey, Integer, JSON, UniqueConstraint
 from sqlalchemy.orm import relationship
 import datetime
 
@@ -59,9 +59,30 @@ class RiskSnapshot(Base):
 
     # Transparency fields (README "honesty" principle): which signals were
     # computed from real data vs. a documented fallback for this snapshot.
-    water_source = Column(String, default="mock")       # "mock" | "copernicus_ndwi" | "copernicus_model"
+    water_source = Column(String, default="mock")       # "mock" | "copernicus_ndwi" | "sentinel1_sar" | "copernicus_model"
     rainfall_source = Column(String, default="open_meteo")
     soil_moisture_source = Column(String, default="open_meteo")
     river_discharge_source = Column(String, default="open_meteo_glofas")
 
     district = relationship("District", back_populates="snapshots")
+
+
+class BaselineCache(Base):
+    """Persists the (district, ISO week-of-year, signal kind) -> seasonal
+    baseline value computed by rainfall_openmeteo.py / hydrology_openmeteo.py.
+
+    Those providers already cache this in-process (avoids refetching 5 years
+    of history on every daily refresh within the same week) — this table adds
+    the same cache surviving a process restart, which is what made one
+    Open-Meteo outage (2026-09-14) worse than it needed to be: a mid-run
+    server restart threw away every baseline already fetched that night,
+    forcing a full re-fetch on the very next refresh. See README limitations."""
+    __tablename__ = "baseline_cache"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    district_id = Column(String, ForeignKey("districts.id"), nullable=False)
+    week_of_year = Column(Integer, nullable=False)
+    kind = Column(String, nullable=False)  # "rainfall" | "soil" | "discharge"
+    value = Column(Float, nullable=False)
+
+    __table_args__ = (UniqueConstraint("district_id", "week_of_year", "kind", name="uq_baseline_cache_key"),)

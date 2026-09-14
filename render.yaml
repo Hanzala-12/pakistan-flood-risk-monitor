@@ -1,0 +1,38 @@
+## Render Blueprint — https://render.com/docs/blueprint-spec
+##
+## Deploys the backend as a Docker web service on Render's free tier. This
+## file only describes the SERVICE; it does not (and cannot) create the
+## Render account itself — that's a real account-creation step only you can
+## do, same reasoning as the Copernicus account earlier in this project.
+##
+## To use it: push this repo to GitHub (already done), sign up at
+## render.com, "New" -> "Blueprint", point it at this repo. Render reads
+## this file and provisions the service below automatically.
+##
+## Free-tier caveat, stated plainly rather than glossing over it: Render's
+## free web services spin down after ~15 minutes of no traffic and take
+## ~30-60s to wake back up on the next request — fine for a demo/portfolio
+## deployment, not for "always-on daily refresh at 2am UTC" (the in-process
+## scheduler won't fire while spun down). For that, either upgrade to a paid
+## instance (not free) or trigger POST /districts/refresh from an external
+## free cron service (e.g. cron-job.org) instead of relying on the
+## in-process APScheduler job.
+services:
+  - type: web
+    name: flood-risk-monitor-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: .
+    plan: free
+    envVars:
+      - key: DATABASE_URL
+        value: sqlite:////data/flood_risk.db
+      - key: SATELLITE_PROVIDER
+        value: mock  # set to "copernicus" once you've added the CDSE_* secrets below in Render's dashboard
+      # Secrets (CDSE credentials, ntfy topic) are NOT set here — add them
+      # as environment variables in the Render dashboard instead, the same
+      # way you would with any other secret. Never commit them to this file.
+    disk:
+      name: flood-risk-data
+      mountPath: /data
+      sizeGB: 1

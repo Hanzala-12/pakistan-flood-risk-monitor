@@ -20,6 +20,7 @@ from app.ingestion.rainfall_openmeteo import OpenMeteoRainfallProvider
 from app.ingestion.hydrology_openmeteo import OpenMeteoHydrologyProvider
 from app.ingestion.satellite_mock import MockSatelliteProvider
 from app.ingestion.base import WaterExtentResult
+from app.alerting.ntfy import maybe_send_severe_alert
 
 logger = logging.getLogger(__name__)
 
@@ -52,11 +53,16 @@ def _get_water_extent(provider, district, rainfall_anomaly: float) -> WaterExten
 def refresh_district(db: Session, district: District, as_of: datetime.date | None = None) -> RiskSnapshot:
     as_of = as_of or datetime.date.today()
     satellite_provider = _get_satellite_provider()
+    # Captured before writing the new snapshot below, so the ntfy alert can
+    # tell "just became Severe" apart from "already was Severe yesterday"
+    # (see app/alerting/ntfy.py — the latter should never re-notify).
+    previous_snapshot = district.snapshots[-1] if district.snapshots else None
+    previous_level = previous_snapshot.risk_level if previous_snapshot else None
 
-    rainfall = _rainfall_provider.get_rainfall_signal(district, as_of)
+    rainfall = _rainfall_provider.get_rainfall_signal(district, as_of, db=db)
     water = _get_water_extent(satellite_provider, district, rainfall.rainfall_anomaly)
-    soil = _hydrology_provider.get_soil_moisture_signal(district, as_of)
-    discharge = _hydrology_provider.get_river_discharge_signal(district, as_of)
+    soil = _hydrology_provider.get_soil_moisture_signal(district, as_of, db=db)
+    discharge = _hydrology_provider.get_river_discharge_signal(district, as_of, db=db)
 
     fusion = fuse_risk(
         water_anomaly=water.water_anomaly,
@@ -92,6 +98,7 @@ def refresh_district(db: Session, district: District, as_of: datetime.date | Non
     db.add(snapshot)
     db.commit()
     db.refresh(snapshot)
+    maybe_send_severe_alert(district, previous_level, snapshot.risk_level, snapshot.risk_score)
     return snapshot
 
 

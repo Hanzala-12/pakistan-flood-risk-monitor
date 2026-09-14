@@ -76,6 +76,16 @@ class Settings(BaseSettings):
     scheduler_enabled: bool = True
     refresh_hour_utc: int = 2  # daily job fire time
 
+    # --- Alerting (app/alerting/ntfy.py) ------------------------------------
+    # ntfy.sh: open-source pub-sub push notifications over a plain HTTP POST,
+    # no account needed on the free public instance (or self-host your own —
+    # same protocol). Off by default since it needs a topic name you pick
+    # yourself (topics on the public instance are unauthenticated by name,
+    # so pick something unguessable, not e.g. "flood-alerts").
+    ntfy_enabled: bool = False
+    ntfy_server: str = "https://ntfy.sh"
+    ntfy_topic: str | None = None
+
     # --- API -----------------------------------------------------------
     cors_allow_origins: list[str] = ["*"]
 
