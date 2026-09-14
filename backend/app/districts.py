@@ -30,6 +30,14 @@ def sync_districts(db: Session) -> int:
                 "scripts/compute_terrain_susceptibility.py before going live.",
                 props["id"],
             )
+        if props.get("discharge_query_point") is None:
+            logger.warning(
+                "%s has no discharge_query_point — run scripts/calibrate_discharge_points.py "
+                "to enable the live river-discharge signal (falls back to a neutral value until then).",
+                props["id"],
+            )
+        discharge_point = props.get("discharge_query_point")
+
         existing = db.get(District, props["id"])
         values = dict(
             name=props["name"],
@@ -41,6 +49,8 @@ def sync_districts(db: Session) -> int:
             area_sqkm=props["area_sqkm"],
             terrain_susceptibility=props.get("terrain_susceptibility") or 0.5,
             terrain_mean_elevation_m=props.get("terrain_mean_elevation_m"),
+            discharge_query_point_lon=discharge_point[0] if discharge_point else None,
+            discharge_query_point_lat=discharge_point[1] if discharge_point else None,
         )
         if existing:
             for k, v in values.items():

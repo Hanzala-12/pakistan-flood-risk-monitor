@@ -4,9 +4,12 @@ Expo (React Native) app: a map screen colored by district risk level, and a
 detail screen with the signal breakdown + 30-day trend. See
 [`../files/IMPLEMENTATION_PLAN.md`](../files/IMPLEMENTATION_PLAN.md) section 8.
 
-Scaffolded with `create-expo-app` (SDK 57, Expo Router, TypeScript). Primary
-target is iOS/Android — `react-native-maps` is a native module with no real
-web renderer (see "Web support" below).
+Scaffolded with `create-expo-app` (SDK 57, Expo Router, TypeScript). **Web is
+the primary target** — the map on web is a real interactive Leaflet map
+(district polygons, click-through to detail, zoom/pan), not a fallback. The
+same codebase still builds for iOS/Android via `react-native-maps` (Metro
+picks whichever `risk-map.*` file matches the platform — see "Structure"
+below); that native path hasn't been run on a device or emulator.
 
 ## Running it
 
@@ -15,8 +18,9 @@ npm install
 npx expo start
 ```
 
-Then press `i` (iOS simulator), `a` (Android emulator), or scan the QR code
-with Expo Go on a physical device.
+Press `w` for web (the primary target — opens in your default browser), or
+`i`/`a` for iOS/Android if you want to try the native map (untested on a
+real device so far, see below).
 
 **Point it at the backend** — the API base URL is read from
 `EXPO_PUBLIC_API_URL` at build time (see `src/api/client.ts`), defaulting to
@@ -45,27 +49,47 @@ src/
   api/client.ts         Typed fetch wrapper for the 3 backend endpoints
   types/district.ts     Mirrors backend/app/schemas.py — keep in sync
   components/
-    risk-map.tsx         Native map (react-native-maps) — iOS/Android only
-    risk-map.web.tsx      Web stub (see below)
+    risk-map.tsx         Native map (react-native-maps) — iOS/Android only, unverified
+    risk-map.web.tsx      Web map (Leaflet, driven imperatively — not react-leaflet)
     risk-badge.tsx, signal-bar.tsx, history-chart.tsx
   constants/risk.ts      Risk-level -> color, shared by map + badges
 ```
 
-## Web support (best-effort, not the primary target)
+## The web map (`risk-map.web.tsx`)
 
-`react-native-maps` has no working web renderer in this Expo SDK — even
-importing it crashes a web bundle (`codegenNativeComponent is not a
-function`). `risk-map.tsx` / `risk-map.web.tsx` is a platform-split pair:
-Metro picks `risk-map.web.tsx` (a no-op stub) for the web build, so the
-native module is never bundled there at all. `app/index.tsx` renders a
-ranked district list on web instead of the map.
+Built with Leaflet directly — imported dynamically and driven via a plain
+DOM ref, not through `react-leaflet` (avoids coupling to whatever React
+version `react-leaflet` happens to support; Leaflet itself is
+framework-agnostic). `react-native-maps` has no web renderer at all in this
+Expo SDK (importing it crashes a web bundle outright), so this is a
+genuinely different implementation per platform, not the same map ported —
+Metro's platform-extension resolution (`risk-map.tsx` vs. `risk-map.web.tsx`)
+picks the right one per build target.
+
+Two real bugs worth knowing about if you touch this file, both only
+reproduce with a live map, not in a type-check:
+
+1. **Every polygon collapsing to a single point.** React Native Web's flex
+   layout resolves the container's true size *after* mount, so Leaflet
+   initializes against a stale/zero-size box and caches that in its pixel
+   projection — coordinates going in are fine, everything rendered comes out
+   degenerate. Fixed with a debounced `ResizeObserver` calling
+   `invalidateSize()`. A naive (non-debounced) version of this fix creates a
+   *second* bug: flex layout can settle through several sizes in one mount,
+   and calling `invalidateSize()` on each one — before the previous call
+   finishes — scatters tiles across a canvas several times larger than the
+   actual container.
+2. **Tiles load correctly but visually spill outside the map container.**
+   `leaflet/dist/leaflet.css` was never imported. Without it,
+   `.leaflet-container` has no `overflow: hidden` and Leaflet's panes have
+   no positioning rules, so correctly-placed tiles aren't clipped to the
+   box — this looks exactly like a layout bug (and isn't one).
 
 `app.json`'s web output is set to `"single"` (client-rendered SPA) rather
 than `"static"` (server-side prerendering): `"static"` tries to
 server-render every route in Node, and `react-native-svg` (used by
-`history-chart.tsx`) hits the same native-codegen problem in that
-environment. `"single"` avoids SSR entirely, which is enough for this app's
-web fallback to work.
+`history-chart.tsx`) hits a native-codegen problem in that environment.
+`"single"` avoids SSR entirely.
 
 ## Known harmless lint warning
 

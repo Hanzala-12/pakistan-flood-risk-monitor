@@ -17,12 +17,14 @@ from app.db import SessionLocal
 from app.models_db import District, RiskSnapshot
 from app.fusion.risk import fuse_risk
 from app.ingestion.rainfall_openmeteo import OpenMeteoRainfallProvider
+from app.ingestion.hydrology_openmeteo import OpenMeteoHydrologyProvider
 from app.ingestion.satellite_mock import MockSatelliteProvider
 from app.ingestion.base import WaterExtentResult
 
 logger = logging.getLogger(__name__)
 
 _rainfall_provider = OpenMeteoRainfallProvider()
+_hydrology_provider = OpenMeteoHydrologyProvider()
 _mock_satellite_provider = MockSatelliteProvider()
 
 
@@ -53,11 +55,15 @@ def refresh_district(db: Session, district: District, as_of: datetime.date | Non
 
     rainfall = _rainfall_provider.get_rainfall_signal(district, as_of)
     water = _get_water_extent(satellite_provider, district, rainfall.rainfall_anomaly)
+    soil = _hydrology_provider.get_soil_moisture_signal(district, as_of)
+    discharge = _hydrology_provider.get_river_discharge_signal(district, as_of)
 
     fusion = fuse_risk(
         water_anomaly=water.water_anomaly,
         rainfall_anomaly=rainfall.rainfall_anomaly,
         terrain_susceptibility=district.terrain_susceptibility,
+        soil_moisture_anomaly=soil.soil_moisture_anomaly,
+        river_discharge_anomaly=discharge.river_discharge_anomaly,
     )
 
     snapshot = RiskSnapshot(
@@ -66,14 +72,22 @@ def refresh_district(db: Session, district: District, as_of: datetime.date | Non
         water_anomaly=water.water_anomaly,
         rainfall_anomaly=rainfall.rainfall_anomaly,
         terrain_susceptibility=district.terrain_susceptibility,
+        soil_moisture_anomaly=soil.soil_moisture_anomaly,
+        river_discharge_anomaly=discharge.river_discharge_anomaly,
         risk_score=fusion.risk_score,
         risk_level=fusion.risk_level,
         rainfall_3d_mm=rainfall.rainfall_3d_mm,
         rainfall_7d_mm=rainfall.rainfall_7d_mm,
         rainfall_baseline_7d_mm=rainfall.baseline_7d_mm,
+        soil_moisture_m3m3=soil.soil_moisture_m3m3,
+        soil_moisture_baseline_m3m3=soil.baseline_m3m3,
+        river_discharge_cms=discharge.river_discharge_cms,
+        river_discharge_baseline_cms=discharge.baseline_cms,
         last_satellite_pass=water.observed_at,
         water_source=water.source,
         rainfall_source=rainfall.source,
+        soil_moisture_source=soil.source,
+        river_discharge_source=discharge.source,
     )
     db.add(snapshot)
     db.commit()

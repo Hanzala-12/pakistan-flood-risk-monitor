@@ -32,6 +32,16 @@ class Settings(BaseSettings):
     satellite_provider: str = "mock"
     cdse_client_id: str | None = None
     cdse_client_secret: str | None = None
+    # Separate from cdse_client_id/secret above: those are a Sentinel Hub OAuth
+    # client (client_credentials), which authenticates OData *search* fine but
+    # is the wrong audience for downloading product bytes (CDSE returns 401
+    # "Token audience not allowed" / DAT-ZIP-609 if you try). Verified against
+    # the live API while building this, not assumed from docs. Band downloads
+    # go through CDSE's S3-compatible object storage instead, which is also
+    # the method CDSE's own docs recommend for full-dataset downloads. Create
+    # these at https://eodata-s3keysmanager.dataspace.copernicus.eu/.
+    cdse_s3_access_key: str | None = None
+    cdse_s3_secret_key: str | None = None
     satellite_lookback_days: int = 10       # how far back to search for a usable scene
     satellite_max_cloud_cover: float = 40.0  # percent
 
@@ -48,9 +58,19 @@ class Settings(BaseSettings):
     model_config_path: Path = REPO_ROOT / "models" / "model_config.json"
 
     # --- Fusion weights (IMPLEMENTATION_PLAN.md section 6.4) -------------
-    fusion_weight_water: float = 0.34
-    fusion_weight_rainfall: float = 0.33
-    fusion_weight_terrain: float = 0.33
+    # Rebalanced from the original 3-term (0.34/0.33/0.33) split when two more real
+    # signals were added (soil moisture, river discharge — found by researching other
+    # open-source flood-risk projects, see README "Data sourcing decisions"). Still a
+    # documented heuristic, not fitted to any outcome data — same honesty caveat as the
+    # original three. River discharge gets the same top weight as water_anomaly since
+    # it's the most direct, dynamic flood indicator now in the system (actual water
+    # currently in the channel); terrain and soil moisture are the two slower-changing,
+    # more baseline-like factors, weighted lower accordingly.
+    fusion_weight_water: float = 0.25
+    fusion_weight_rainfall: float = 0.20
+    fusion_weight_terrain: float = 0.15
+    fusion_weight_soil_moisture: float = 0.15
+    fusion_weight_river_discharge: float = 0.25
 
     # --- Scheduler ---------------------------------------------------------
     scheduler_enabled: bool = True

@@ -1,9 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Platform, Pressable, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
-import { useRouter } from 'expo-router';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
 import { api, ApiError } from '@/api/client';
-import { RiskBadge } from '@/components/risk-badge';
 import { RiskMap } from '@/components/risk-map';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -15,7 +13,6 @@ import type { DistrictSummary } from '@/types/district';
 export default function MapScreen() {
   const [districts, setDistricts] = useState<DistrictSummary[] | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [refreshing, setRefreshing] = useState(false);
 
   const load = useCallback(async () => {
     try {
@@ -31,12 +28,6 @@ export default function MapScreen() {
     // Fetch-on-mount (see the same note in district/[id].tsx).
     // eslint-disable-next-line react-hooks/set-state-in-effect
     load();
-  }, [load]);
-
-  const onRefresh = useCallback(async () => {
-    setRefreshing(true);
-    await load();
-    setRefreshing(false);
   }, [load]);
 
   if (districts === null && !error) {
@@ -64,12 +55,8 @@ export default function MapScreen() {
     );
   }
 
-  // react-native-maps has no usable web renderer in this SDK — show a simple
-  // ranked list there instead (see components/risk-map.web.tsx).
-  if (Platform.OS === 'web') {
-    return <DistrictListFallback districts={districts!} refreshing={refreshing} onRefresh={onRefresh} />;
-  }
-
+  // Same component on every platform now — Metro resolves risk-map.web.tsx
+  // (Leaflet) on web and risk-map.tsx (react-native-maps) on iOS/Android.
   return (
     <View style={styles.flex}>
       <RiskMap districts={districts!} />
@@ -93,40 +80,6 @@ function Legend() {
   );
 }
 
-function DistrictListFallback({
-  districts,
-  refreshing,
-  onRefresh,
-}: {
-  districts: DistrictSummary[];
-  refreshing: boolean;
-  onRefresh: () => void;
-}) {
-  const router = useRouter();
-  return (
-    <ScrollView
-      style={styles.flex}
-      contentContainerStyle={styles.listContent}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-    >
-      <ThemedText type="small" themeColor="textSecondary" style={{ marginBottom: Spacing.three }}>
-        Map polygons need a native build (react-native-maps has no web renderer) — showing districts ranked by risk
-        instead. Run this on iOS/Android to see the map.
-      </ThemedText>
-      {[...districts]
-        .sort((a, b) => b.risk_score - a.risk_score)
-        .map((d) => (
-          <Pressable key={d.id} onPress={() => router.push(`/district/${d.id}`)}>
-            <ThemedView type="backgroundElement" style={styles.listRow}>
-              <ThemedText type="default">{d.name}</ThemedText>
-              <RiskBadge level={d.risk_level} />
-            </ThemedView>
-          </Pressable>
-        ))}
-    </ScrollView>
-  );
-}
-
 const styles = StyleSheet.create({
   flex: { flex: 1 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: Spacing.four },
@@ -145,13 +98,4 @@ const styles = StyleSheet.create({
   },
   legendRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   legendDot: { width: 10, height: 10, borderRadius: 5 },
-  listContent: { padding: Spacing.three },
-  listRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: Spacing.three,
-    borderRadius: 10,
-    marginBottom: Spacing.two,
-  },
 });

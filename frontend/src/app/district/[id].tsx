@@ -100,7 +100,27 @@ export default function DistrictDetailScreen() {
             label="Terrain susceptibility"
             value={s.terrain_susceptibility}
             accent="#7a5cc7"
-            caption="Static — from elevation/relief, computed once (see scripts/compute_terrain_susceptibility.py)"
+            caption="Static — from elevation, relief, and distance to a major river, computed once (see scripts/compute_terrain_susceptibility.py + compute_river_proximity.py)"
+          />
+          <SignalBar
+            label="Soil moisture anomaly"
+            value={s.soil_moisture_anomaly}
+            accent="#8a6a3f"
+            caption={
+              s.soil_moisture_m3m3 != null
+                ? `${s.soil_moisture_m3m3} m³/m³ vs. a ${s.soil_moisture_baseline_m3m3} m³/m³ seasonal baseline — how saturated the ground already is, independent of this week's rain`
+                : undefined
+            }
+          />
+          <SignalBar
+            label="River discharge anomaly"
+            value={s.river_discharge_anomaly}
+            accent="#1f8fa3"
+            caption={
+              s.river_discharge_cms != null
+                ? `${s.river_discharge_cms} m³/s vs. a ${s.river_discharge_baseline_cms} m³/s seasonal baseline — actual modeled river flow (GloFAS), the most direct signal in this breakdown`
+                : undefined
+            }
           />
         </Section>
 

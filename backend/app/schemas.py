@@ -23,11 +23,19 @@ class SignalBreakdown(BaseModel):
     water_anomaly: float
     rainfall_anomaly: float
     terrain_susceptibility: float
+    soil_moisture_anomaly: float
+    river_discharge_anomaly: float
     water_source: str
     rainfall_source: str
+    soil_moisture_source: str
+    river_discharge_source: str
     rainfall_3d_mm: float | None = None
     rainfall_7d_mm: float | None = None
     rainfall_baseline_7d_mm: float | None = None
+    soil_moisture_m3m3: float | None = None
+    soil_moisture_baseline_m3m3: float | None = None
+    river_discharge_cms: float | None = None
+    river_discharge_baseline_cms: float | None = None
 
 
 class DistrictDetail(BaseModel):

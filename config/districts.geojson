@@ -28,10 +28,23 @@
         ],
         "source": "OCHA/HDX cod-ab-pak (data.humdata.org), admin level 2",
         "source_valid_on": "2022-09-09",
-        "terrain_susceptibility": 0.645,
+        "terrain_susceptibility": 0.769,
         "terrain_mean_elevation_m": 129.2,
         "terrain_relief_m": 739.0,
-        "terrain_method": "SRTM90m point samples via opentopodata.org; normalized (elevation, relief) across v1 district set"
+        "terrain_method": "SRTM90m point samples via opentopodata.org; normalized (elevation, relief) across v1 district set; + distance to nearest major river (HydroRIVERS, >= 500 m^3/s discharge), exponential decay (not min-max \u2014 see script docstring), blended 0.65/0.35 with prior elevation+relief score",
+        "terrain_river_distance_km": 0.0,
+        "terrain_river_proximity_score": 1.0,
+        "nearest_major_river_point": [
+          67.9104,
+          26.9213
+        ],
+        "terrain_susceptibility_base": 0.645,
+        "terrain_method_base": "SRTM90m point samples via opentopodata.org; normalized (elevation, relief) across v1 district set",
+        "discharge_query_point": [
+          67.8504,
+          26.7713
+        ],
+        "discharge_calibration_cms": 5914.6
       },
       "geometry": {
         "type": "Polygon",
@@ -5658,10 +5671,23 @@
         ],
         "source": "OCHA/HDX cod-ab-pak (data.humdata.org), admin level 2",
         "source_valid_on": "2022-09-09",
-        "terrain_susceptibility": 0.923,
+        "terrain_susceptibility": 0.782,
         "terrain_mean_elevation_m": 57.7,
         "terrain_relief_m": 16.0,
-        "terrain_method": "SRTM90m point samples via opentopodata.org; normalized (elevation, relief) across v1 district set"
+        "terrain_method": "SRTM90m point samples via opentopodata.org; normalized (elevation, relief) across v1 district set; + distance to nearest major river (HydroRIVERS, >= 500 m^3/s discharge), exponential decay (not min-max \u2014 see script docstring), blended 0.65/0.35 with prior elevation+relief score",
+        "terrain_river_distance_km": 13.1,
+        "terrain_river_proximity_score": 0.521,
+        "nearest_major_river_point": [
+          69.0396,
+          28.0479
+        ],
+        "terrain_susceptibility_base": 0.923,
+        "terrain_method_base": "SRTM90m point samples via opentopodata.org; normalized (elevation, relief) across v1 district set",
+        "discharge_query_point": [
+          68.9796,
+          27.9279
+        ],
+        "discharge_calibration_cms": 5983.1
       },
       "geometry": {
         "type": "Polygon",
@@ -9512,10 +9538,23 @@
         ],
         "source": "OCHA/HDX cod-ab-pak (data.humdata.org), admin level 2",
         "source_valid_on": "2022-09-09",
-        "terrain_susceptibility": 0.441,
+        "terrain_susceptibility": 0.467,
         "terrain_mean_elevation_m": 180.4,
         "terrain_relief_m": 1276.0,
-        "terrain_method": "SRTM90m point samples via opentopodata.org; normalized (elevation, relief) across v1 district set"
+        "terrain_method": "SRTM90m point samples via opentopodata.org; normalized (elevation, relief) across v1 district set; + distance to nearest major river (HydroRIVERS, >= 500 m^3/s discharge), exponential decay (not min-max \u2014 see script docstring), blended 0.65/0.35 with prior elevation+relief score",
+        "terrain_river_distance_km": 13.2,
+        "terrain_river_proximity_score": 0.516,
+        "nearest_major_river_point": [
+          68.1604,
+          27.3146
+        ],
+        "terrain_susceptibility_base": 0.441,
+        "terrain_method_base": "SRTM90m point samples via opentopodata.org; normalized (elevation, relief) across v1 district set",
+        "discharge_query_point": [
+          68.2204,
+          27.3746
+        ],
+        "discharge_calibration_cms": 5941.9
       },
       "geometry": {
         "type": "Polygon",
@@ -14194,10 +14233,23 @@
         ],
         "source": "OCHA/HDX cod-ab-pak (data.humdata.org), admin level 2",
         "source_valid_on": "2022-09-09",
-        "terrain_susceptibility": 0.935,
+        "terrain_susceptibility": 0.958,
         "terrain_mean_elevation_m": 50.8,
         "terrain_relief_m": 7.0,
-        "terrain_method": "SRTM90m point samples via opentopodata.org; normalized (elevation, relief) across v1 district set"
+        "terrain_method": "SRTM90m point samples via opentopodata.org; normalized (elevation, relief) across v1 district set; + distance to nearest major river (HydroRIVERS, >= 500 m^3/s discharge), exponential decay (not min-max \u2014 see script docstring), blended 0.65/0.35 with prior elevation+relief score",
+        "terrain_river_distance_km": 0.0,
+        "terrain_river_proximity_score": 1.0,
+        "nearest_major_river_point": [
+          68.4513,
+          27.6896
+        ],
+        "terrain_susceptibility_base": 0.935,
+        "terrain_method_base": "SRTM90m point samples via opentopodata.org; normalized (elevation, relief) across v1 district set",
+        "discharge_query_point": [
+          68.4213,
+          27.6596
+        ],
+        "discharge_calibration_cms": 5955.6
       },
       "geometry": {
         "type": "Polygon",
@@ -20608,10 +20660,23 @@
         ],
         "source": "OCHA/HDX cod-ab-pak (data.humdata.org), admin level 2",
         "source_valid_on": "2022-09-09",
-        "terrain_susceptibility": 0.92,
+        "terrain_susceptibility": 0.948,
         "terrain_mean_elevation_m": 60.4,
         "terrain_relief_m": 14.0,
-        "terrain_method": "SRTM90m point samples via opentopodata.org; normalized (elevation, relief) across v1 district set"
+        "terrain_method": "SRTM90m point samples via opentopodata.org; normalized (elevation, relief) across v1 district set; + distance to nearest major river (HydroRIVERS, >= 500 m^3/s discharge), exponential decay (not min-max \u2014 see script docstring), blended 0.65/0.35 with prior elevation+relief score",
+        "terrain_river_distance_km": 0.0,
+        "terrain_river_proximity_score": 1.0,
+        "nearest_major_river_point": [
+          69.0437,
+          28.0545
+        ],
+        "terrain_susceptibility_base": 0.92,
+        "terrain_method_base": "SRTM90m point samples via opentopodata.org; normalized (elevation, relief) across v1 district set",
+        "discharge_query_point": [
+          68.9537,
+          27.9045
+        ],
+        "discharge_calibration_cms": 5983.1
       },
       "geometry": {
         "type": "Polygon",
@@ -25346,10 +25411,23 @@
         ],
         "source": "OCHA/HDX cod-ab-pak (data.humdata.org), admin level 2",
         "source_valid_on": "2022-09-09",
-        "terrain_susceptibility": 0.908,
+        "terrain_susceptibility": 0.94,
         "terrain_mean_elevation_m": 68.9,
         "terrain_relief_m": 14.0,
-        "terrain_method": "SRTM90m point samples via opentopodata.org; normalized (elevation, relief) across v1 district set"
+        "terrain_method": "SRTM90m point samples via opentopodata.org; normalized (elevation, relief) across v1 district set; + distance to nearest major river (HydroRIVERS, >= 500 m^3/s discharge), exponential decay (not min-max \u2014 see script docstring), blended 0.65/0.35 with prior elevation+relief score",
+        "terrain_river_distance_km": 0.0,
+        "terrain_river_proximity_score": 1.0,
+        "nearest_major_river_point": [
+          69.7187,
+          28.4236
+        ],
+        "terrain_susceptibility_base": 0.908,
+        "terrain_method_base": "SRTM90m point samples via opentopodata.org; normalized (elevation, relief) across v1 district set",
+        "discharge_query_point": [
+          69.5687,
+          28.3036
+        ],
+        "discharge_calibration_cms": 6010.7
       },
       "geometry": {
         "type": "Polygon",
@@ -28588,10 +28666,23 @@
         ],
         "source": "OCHA/HDX cod-ab-pak (data.humdata.org), admin level 2",
         "source_valid_on": "2022-09-09",
-        "terrain_susceptibility": 0.911,
+        "terrain_susceptibility": 0.942,
         "terrain_mean_elevation_m": 55.3,
         "terrain_relief_m": 81.0,
-        "terrain_method": "SRTM90m point samples via opentopodata.org; normalized (elevation, relief) across v1 district set"
+        "terrain_method": "SRTM90m point samples via opentopodata.org; normalized (elevation, relief) across v1 district set; + distance to nearest major river (HydroRIVERS, >= 500 m^3/s discharge), exponential decay (not min-max \u2014 see script docstring), blended 0.65/0.35 with prior elevation+relief score",
+        "terrain_river_distance_km": 0.0,
+        "terrain_river_proximity_score": 1.0,
+        "nearest_major_river_point": [
+          68.6884,
+          27.7771
+        ],
+        "terrain_susceptibility_base": 0.911,
+        "terrain_method_base": "SRTM90m point samples via opentopodata.org; normalized (elevation, relief) across v1 district set",
+        "discharge_query_point": [
+          68.5384,
+          27.6571
+        ],
+        "discharge_calibration_cms": 5955.6
       },
       "geometry": {
         "type": "Polygon",
@@ -38818,10 +38909,23 @@
         ],
         "source": "OCHA/HDX cod-ab-pak (data.humdata.org), admin level 2",
         "source_valid_on": "2022-09-09",
-        "terrain_susceptibility": 0.907,
+        "terrain_susceptibility": 0.94,
         "terrain_mean_elevation_m": 66.0,
         "terrain_relief_m": 33.0,
-        "terrain_method": "SRTM90m point samples via opentopodata.org; normalized (elevation, relief) across v1 district set"
+        "terrain_method": "SRTM90m point samples via opentopodata.org; normalized (elevation, relief) across v1 district set; + distance to nearest major river (HydroRIVERS, >= 500 m^3/s discharge), exponential decay (not min-max \u2014 see script docstring), blended 0.65/0.35 with prior elevation+relief score",
+        "terrain_river_distance_km": 0.0,
+        "terrain_river_proximity_score": 1.0,
+        "nearest_major_river_point": [
+          69.0365,
+          28.0093
+        ],
+        "terrain_susceptibility_base": 0.907,
+        "terrain_method_base": "SRTM90m point samples via opentopodata.org; normalized (elevation, relief) across v1 district set",
+        "discharge_query_point": [
+          68.9765,
+          27.9193
+        ],
+        "discharge_calibration_cms": 5983.1
       },
       "geometry": {
         "type": "Polygon",
@@ -44828,10 +44932,23 @@
         ],
         "source": "OCHA/HDX cod-ab-pak (data.humdata.org), admin level 2",
         "source_valid_on": "2022-09-09",
-        "terrain_susceptibility": 0.944,
+        "terrain_susceptibility": 0.964,
         "terrain_mean_elevation_m": 43.7,
         "terrain_relief_m": 12.0,
-        "terrain_method": "SRTM90m point samples via opentopodata.org; normalized (elevation, relief) across v1 district set"
+        "terrain_method": "SRTM90m point samples via opentopodata.org; normalized (elevation, relief) across v1 district set; + distance to nearest major river (HydroRIVERS, >= 500 m^3/s discharge), exponential decay (not min-max \u2014 see script docstring), blended 0.65/0.35 with prior elevation+relief score",
+        "terrain_river_distance_km": 0.0,
+        "terrain_river_proximity_score": 1.0,
+        "nearest_major_river_point": [
+          68.2021,
+          27.2353
+        ],
+        "terrain_susceptibility_base": 0.944,
+        "terrain_method_base": "SRTM90m point samples via opentopodata.org; normalized (elevation, relief) across v1 district set",
+        "discharge_query_point": [
+          68.0221,
+          27.1153
+        ],
+        "discharge_calibration_cms": 5928.2
       },
       "geometry": {
         "type": "Polygon",
@@ -50438,10 +50555,23 @@
         ],
         "source": "OCHA/HDX cod-ab-pak (data.humdata.org), admin level 2",
         "source_valid_on": "2022-09-09",
-        "terrain_susceptibility": 0.992,
+        "terrain_susceptibility": 0.995,
         "terrain_mean_elevation_m": 9.3,
         "terrain_relief_m": 15.0,
-        "terrain_method": "SRTM90m point samples via opentopodata.org; normalized (elevation, relief) across v1 district set"
+        "terrain_method": "SRTM90m point samples via opentopodata.org; normalized (elevation, relief) across v1 district set; + distance to nearest major river (HydroRIVERS, >= 500 m^3/s discharge), exponential decay (not min-max \u2014 see script docstring), blended 0.65/0.35 with prior elevation+relief score",
+        "terrain_river_distance_km": 0.0,
+        "terrain_river_proximity_score": 1.0,
+        "nearest_major_river_point": [
+          69.3183,
+          24.7854
+        ],
+        "terrain_susceptibility_base": 0.992,
+        "terrain_method_base": "SRTM90m point samples via opentopodata.org; normalized (elevation, relief) across v1 district set",
+        "discharge_query_point": [
+          69.1683,
+          24.6354
+        ],
+        "discharge_calibration_cms": 5.1
       },
       "geometry": {
         "type": "Polygon",
@@ -59228,10 +59358,23 @@
         ],
         "source": "OCHA/HDX cod-ab-pak (data.humdata.org), admin level 2",
         "source_valid_on": "2022-09-09",
-        "terrain_susceptibility": 0.933,
+        "terrain_susceptibility": 0.956,
         "terrain_mean_elevation_m": 27.4,
         "terrain_relief_m": 150.0,
-        "terrain_method": "SRTM90m point samples via opentopodata.org; normalized (elevation, relief) across v1 district set"
+        "terrain_method": "SRTM90m point samples via opentopodata.org; normalized (elevation, relief) across v1 district set; + distance to nearest major river (HydroRIVERS, >= 500 m^3/s discharge), exponential decay (not min-max \u2014 see script docstring), blended 0.65/0.35 with prior elevation+relief score",
+        "terrain_river_distance_km": 0.0,
+        "terrain_river_proximity_score": 1.0,
+        "nearest_major_river_point": [
+          68.3224,
+          25.2432
+        ],
+        "terrain_susceptibility_base": 0.933,
+        "terrain_method_base": "SRTM90m point samples via opentopodata.org; normalized (elevation, relief) across v1 district set",
+        "discharge_query_point": [
+          68.2024,
+          25.0632
+        ],
+        "discharge_calibration_cms": 5941.9
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -70016,10 +70159,23 @@
         ],
         "source": "OCHA/HDX cod-ab-pak (data.humdata.org), admin level 2",
         "source_valid_on": "2022-09-09",
-        "terrain_susceptibility": 0.998,
+        "terrain_susceptibility": 0.999,
         "terrain_mean_elevation_m": 4.8,
         "terrain_relief_m": 16.0,
-        "terrain_method": "SRTM90m point samples via opentopodata.org; normalized (elevation, relief) across v1 district set"
+        "terrain_method": "SRTM90m point samples via opentopodata.org; normalized (elevation, relief) across v1 district set; + distance to nearest major river (HydroRIVERS, >= 500 m^3/s discharge), exponential decay (not min-max \u2014 see script docstring), blended 0.65/0.35 with prior elevation+relief score",
+        "terrain_river_distance_km": 0.0,
+        "terrain_river_proximity_score": 1.0,
+        "nearest_major_river_point": [
+          68.2687,
+          24.9858
+        ],
+        "terrain_susceptibility_base": 0.998,
+        "terrain_method_base": "SRTM90m point samples via opentopodata.org; normalized (elevation, relief) across v1 district set",
+        "discharge_query_point": [
+          68.0887,
+          24.8658
+        ],
+        "discharge_calibration_cms": 5941.9
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -77604,10 +77760,23 @@
         ],
         "source": "OCHA/HDX cod-ab-pak (data.humdata.org), admin level 2",
         "source_valid_on": "2022-09-09",
-        "terrain_susceptibility": 0.0,
+        "terrain_susceptibility": 0.35,
         "terrain_mean_elevation_m": 429.9,
         "terrain_relief_m": 1637.0,
-        "terrain_method": "SRTM90m point samples via opentopodata.org; normalized (elevation, relief) across v1 district set"
+        "terrain_method": "SRTM90m point samples via opentopodata.org; normalized (elevation, relief) across v1 district set; + distance to nearest major river (HydroRIVERS, >= 500 m^3/s discharge), exponential decay (not min-max \u2014 see script docstring), blended 0.65/0.35 with prior elevation+relief score",
+        "terrain_river_distance_km": 0.0,
+        "terrain_river_proximity_score": 1.0,
+        "nearest_major_river_point": [
+          70.7906,
+          31.2636
+        ],
+        "terrain_susceptibility_base": 0.0,
+        "terrain_method_base": "SRTM90m point samples via opentopodata.org; normalized (elevation, relief) across v1 district set",
+        "discharge_query_point": [
+          70.7606,
+          31.0836
+        ],
+        "discharge_calibration_cms": 4167.7
       },
       "geometry": {
         "type": "Polygon",
@@ -85594,10 +85763,23 @@
         ],
         "source": "OCHA/HDX cod-ab-pak (data.humdata.org), admin level 2",
         "source_valid_on": "2022-09-09",
-        "terrain_susceptibility": 0.309,
+        "terrain_susceptibility": 0.551,
         "terrain_mean_elevation_m": 277.6,
         "terrain_relief_m": 1252.0,
-        "terrain_method": "SRTM90m point samples via opentopodata.org; normalized (elevation, relief) across v1 district set"
+        "terrain_method": "SRTM90m point samples via opentopodata.org; normalized (elevation, relief) across v1 district set; + distance to nearest major river (HydroRIVERS, >= 500 m^3/s discharge), exponential decay (not min-max \u2014 see script docstring), blended 0.65/0.35 with prior elevation+relief score",
+        "terrain_river_distance_km": 0.0,
+        "terrain_river_proximity_score": 1.0,
+        "nearest_major_river_point": [
+          70.7146,
+          29.6415
+        ],
+        "terrain_susceptibility_base": 0.309,
+        "terrain_method_base": "SRTM90m point samples via opentopodata.org; normalized (elevation, relief) across v1 district set",
+        "discharge_query_point": [
+          70.6246,
+          29.4615
+        ],
+        "discharge_calibration_cms": 4304.3
       },
       "geometry": {
         "type": "Polygon",

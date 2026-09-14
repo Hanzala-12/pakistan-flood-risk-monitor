@@ -19,6 +19,13 @@ COPY config ./config
 ENV PYTHONPATH=/app
 ENV DATABASE_URL=sqlite:////data/flood_risk.db
 ENV DISTRICTS_GEOJSON_PATH=/app/config/districts.geojson
+# app/config.py's REPO_ROOT is computed as three parents up from config.py's own
+# location, which only lands on the repo root in the local dev layout
+# (backend/app/config.py). In this image only backend/app gets copied to /app/app,
+# so that same math resolves to "/" instead of "/app" — these two would otherwise
+# silently look in /models/... instead of the /app/models mount from docker-compose.yml.
+ENV MODEL_WEIGHTS_PATH=/app/models/flood_segmentation_model.pt
+ENV MODEL_CONFIG_PATH=/app/models/model_config.json
 
 EXPOSE 8000
 

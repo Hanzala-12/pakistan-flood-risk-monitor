@@ -16,11 +16,19 @@ export interface SignalBreakdown {
   water_anomaly: number;
   rainfall_anomaly: number;
   terrain_susceptibility: number;
+  soil_moisture_anomaly: number;
+  river_discharge_anomaly: number;
   water_source: string;
   rainfall_source: string;
+  soil_moisture_source: string;
+  river_discharge_source: string;
   rainfall_3d_mm: number | null;
   rainfall_7d_mm: number | null;
   rainfall_baseline_7d_mm: number | null;
+  soil_moisture_m3m3: number | null;
+  soil_moisture_baseline_m3m3: number | null;
+  river_discharge_cms: number | null;
+  river_discharge_baseline_cms: number | null;
 }
 
 export interface GeoJSONGeometry {

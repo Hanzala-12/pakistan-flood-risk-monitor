@@ -1,0 +1,13 @@
+# One-time/maintenance script dependencies — NOT used by the backend at
+# runtime (see backend/requirements.txt for that). Isolated here so the
+# deployed API image never needs shapely/GDAL-adjacent tooling just because
+# a setup script does.
+#
+# Usage:
+#   cd scripts && python -m venv .venv
+#   .venv\Scripts\activate        # or `source .venv/bin/activate`
+#   pip install -r requirements.txt
+#   python compute_river_proximity.py
+
+shapely==2.1.2
+pyshp==3.1.6

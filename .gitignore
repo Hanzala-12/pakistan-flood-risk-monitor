@@ -27,6 +27,9 @@ models/sample_predictions.png
 # Scratch landing spot for raw Kaggle downloads before copying the good bits into models/
 flood_segmentation_artifacts/
 
+# scripts/compute_river_proximity.py's downloaded HydroRIVERS data + scan cache (~90MB+)
+scripts/.cache/
+
 # --- Node / frontend ---------------------------------------------------
 frontend/node_modules/
 frontend/.expo/
